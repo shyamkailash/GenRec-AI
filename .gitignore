@@ -1,20 +1,50 @@
 # Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
 venv/
-.env
+.env/
+backend/venv/
 
 # Django
+*.log
 db.sqlite3
+backend/db.sqlite3
 media/
+uploads/
+backend/uploads/
 staticfiles/
 
-# Node / Next.js
-node_modules/
-.next/
-out/
-.env.local
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
 
-# OS / Editor
-.DS_Store
+# IDE
 .vscode/
+.idea/
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# AI/RAG databases
+chroma_db/
+backend/chroma_db/
+
+# MLflow and DVC runtime files
+mlruns/
+.dvc/cache/
+
+# Generated documents
+*.pdf
+*.docx
+backend_broken_backup/
