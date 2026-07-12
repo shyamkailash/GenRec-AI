@@ -17,6 +17,10 @@ ALLOWED_EXTENSIONS = {
     ".txt",
 }
 
+from .services.text_extractor import (
+    TextExtractionError,
+    extract_text,
+)
 
 def validate_document_extension(uploaded_file):
     extension = Path(uploaded_file.name).suffix.lower()
@@ -94,4 +98,43 @@ class ExperimentDocument(models.Model):
         return (
             f"{self.experiment.title} - "
             f"{self.original_filename}"
+        )
+    
+    def process_extraction(self):
+        self.extraction_status = "processing"
+        self.extraction_error = ""
+
+        self.save(
+            update_fields=[
+                "extraction_status",
+                "extraction_error",
+            ]
+        )
+
+        try:
+            extracted_content = extract_text(
+                self.file.path
+            )
+
+            self.extracted_text = extracted_content
+            self.extraction_status = "completed"
+
+        except TextExtractionError as exc:
+            self.extracted_text = ""
+            self.extraction_status = "failed"
+            self.extraction_error = str(exc)
+
+        except Exception as exc:
+            self.extracted_text = ""
+            self.extraction_status = "failed"
+            self.extraction_error = (
+                f"Unexpected extraction error: {exc}"
+            )
+
+        self.save(
+            update_fields=[
+                "extracted_text",
+                "extraction_status",
+                "extraction_error",
+            ]
         )
