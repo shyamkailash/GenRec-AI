@@ -22,6 +22,9 @@ class ExperimentDocumentSerializer(
             "extraction_status",
             "extraction_error",
             "uploaded_at",
+            "structured_content",
+            "structure_status",
+            "structure_error",
         ]
 
         read_only_fields = [
@@ -32,6 +35,9 @@ class ExperimentDocumentSerializer(
             "extraction_status",
             "extraction_error",
             "uploaded_at",
+            "structured_content",
+            "structure_status",
+            "structure_error",
         ]
 
     def get_file_url(self, obj):

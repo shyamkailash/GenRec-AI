@@ -88,6 +88,71 @@ class ExperimentDocument(models.Model):
         auto_now_add=True,
     )
 
+    structured_content = models.JSONField(
+    default=dict,
+    blank=True,
+    )
+
+    structure_status = models.CharField(
+        max_length=30,
+        choices=[
+            ("pending", "Pending"),
+            ("processing", "Processing"),
+            ("completed", "Completed"),
+            ("failed", "Failed"),
+        ],
+        default="pending",
+    )
+
+    structure_error = models.TextField(
+        blank=True,
+    )
+
+    def process_observation_structure(self):
+        from agents.services.observation_extractor import (
+            ObservationExtractionError,
+            extract_observation_sections,
+        )
+
+        self.structure_status = "processing"
+        self.structure_error = ""
+
+        self.save(
+            update_fields=[
+                "structure_status",
+                "structure_error",
+            ]
+        )
+
+        try:
+            observation = extract_observation_sections(
+                self.extracted_text
+            )
+
+            self.structured_content = observation.to_dict()
+            self.structure_status = "completed"
+            self.structure_error = ""
+
+        except ObservationExtractionError as exc:
+            self.structured_content = {}
+            self.structure_status = "failed"
+            self.structure_error = str(exc)
+
+        except Exception as exc:
+            self.structured_content = {}
+            self.structure_status = "failed"
+            self.structure_error = (
+                f"Unexpected observation extraction error: {exc}"
+            )
+
+        self.save(
+            update_fields=[
+                "structured_content",
+                "structure_status",
+                "structure_error",
+            ]
+        )
+        
     def save(self, *args, **kwargs):
         if self.file and not self.original_filename:
             self.original_filename = self.file.name
