@@ -134,3 +134,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Retrieval-augmented generation
+CHROMA_DB_PATH = BASE_DIR.parent / "chroma_db"
+RAG_COLLECTION_NAME = "genrec_experiment_documents"
+RAG_EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+RAG_CHUNK_SIZE = 800
+RAG_CHUNK_OVERLAP = 120
