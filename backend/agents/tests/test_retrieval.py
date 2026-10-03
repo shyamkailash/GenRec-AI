@@ -65,6 +65,16 @@ class RetrievalAgentTests(TestCase):
             result.context,
         )
 
+        response_data = result.to_dict()
+
+        self.assertIn("citations", response_data)
+        self.assertEqual(len(response_data["citations"]), 2)
+
+        first_citation = response_data["citations"][0]
+        self.assertEqual(first_citation["citation_id"], "C1")
+        self.assertEqual(first_citation["source"], "ml_manual.pdf")
+        self.assertEqual(first_citation["similarity"], 0.91)
+
     def test_removes_duplicate_results(self):
         experiment = Experiment.objects.create(
             subject="Python Laboratory",
