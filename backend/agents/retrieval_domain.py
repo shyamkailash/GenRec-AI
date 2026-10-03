@@ -24,6 +24,23 @@ class RetrievalResult:
     warnings: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
+        citations = []
+
+        for index, match in enumerate(self.matches, start=1):
+            metadata = match.metadata or {}
+
+            citations.append({
+                "citation_id": f"C{index}",
+                "source": metadata.get("filename") or "Unknown source",
+                "document_id": metadata.get("document_id"),
+                "experiment_id": metadata.get(
+                    "experiment_id", self.experiment_id
+                ),
+                "chunk_index": metadata.get("chunk_index"),
+                "similarity": match.similarity,
+                "query": match.query,
+            })
+
         return {
             "experiment_id": self.experiment_id,
             "queries": self.queries,
@@ -33,4 +50,5 @@ class RetrievalResult:
             ],
             "context": self.context,
             "warnings": self.warnings,
+            "citations": citations,
         }
