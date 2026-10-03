@@ -152,12 +152,15 @@ class ContentGenerationAPIView(APIView):
         )
 
         retrieved_context = serializer.validated_data.get("retrieved_context", "")
+        citations = []
         if not retrieved_context:
             try:
                 retrieval_result = self.retrieval_agent_class().retrieve(experiment)
-                retrieved_context = retrieval_result.context
-            except Exception:
+            except RetrievalAgentError:
                 pass
+            else:
+                retrieved_context = retrieval_result.context
+                citations = retrieval_result.to_dict()["citations"]
 
         try:
             result = self.content_agent_class().generate(
@@ -188,6 +191,7 @@ class ContentGenerationAPIView(APIView):
                 "program": result.program,
                 "output": result.output,
                 "result": result.result,
+                "citations": citations,
             },
             status=status.HTTP_200_OK,
         )
@@ -250,4 +254,3 @@ class DocumentGenerationAPIView(APIView):
             result.to_dict(),
             status=status.HTTP_200_OK,
         )
-
